@@ -16,6 +16,10 @@ class BlogController extends Controller
 
     public function store(Request $request)
     {
+           \Log::debug('Request all data:', $request->all());
+    \Log::debug('Request has file photo:', [$request->hasFile('photo')]);
+    \Log::debug('Title value:', ['title' => $request->input('title')]);
+    \Log::debug('Content value:', ['content' => $request->input('content')]);
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
