@@ -22,8 +22,10 @@ class BlogController extends Controller
             'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
+       if ($request->hasFile('photo')) {
         $path = $request->file('photo')->store('blogs', 'public');
         $validated['photo'] = $path;
+    }
 
         $blog = Blog::create($validated);
 
