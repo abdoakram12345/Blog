@@ -29,14 +29,26 @@ class Handler extends ExceptionHandler
         });
     }
 
-    public function render($request, Throwable $exception)
-    {
-        if ($exception instanceof ModelNotFoundException) {
-            return response()->json([
-                'error' => 'Blog not found.',
-            ], 404);
-        }
-
-        return parent::render($request, $exception);
+ // In app/Exceptions/Handler.php
+public function render($request, Throwable $e)
+{
+    if ($request->wantsJson() || $request->is('api/*')) {
+        return response()->json([
+            'message' => 'An error occurred.',
+            'error' => config('app.debug') ? $e->getMessage() : 'Internal Server Error'
+        ], $this->getHttpStatusCode($e));
     }
+    return parent::render($request, $e);
+}
+
+private function getHttpStatusCode(Throwable $e): int
+{
+    if (method_exists($e, 'getStatusCode')) {
+        return $e->getStatusCode();
+    }
+    if ($e instanceof \Illuminate\Validation\ValidationException) {
+        return 422;
+    }
+    return 500;
+}
 }
